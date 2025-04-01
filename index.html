@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StellarBirthdays - Your Cosmic Connection</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Apply Inter font globally */
+        body {
+            font-family: 'Inter', sans-serif;
+            /* Subtle background pattern */
+            background-image: radial-gradient(circle at top right, rgba(121, 68, 154, 0.1), transparent),
+                              radial-gradient(circle at bottom left, rgba(49, 46, 129, 0.1), transparent);
+            background-attachment: fixed; /* Keep pattern fixed during scroll */
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #1f2937; } /* gray-800 */
+        ::-webkit-scrollbar-thumb { background: #4b5563; border-radius: 4px; } /* gray-600 */
+        ::-webkit-scrollbar-thumb:hover { background: #6b7280; } /* gray-500 */
+        /* Style for the date input placeholder */
+        input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(0.6); cursor: pointer; }
+        /* Basic transition for hover effects */
+        button, a, [data-star-name] { transition: all 0.2s ease-in-out; }
+        /* Ensure hidden sections don't affect layout */
+        .hidden { display: none; }
+        /* Fade-in animation */
+        @keyframes fadeIn {
+            '0%': { opacity: 0; transform: translateY(10px); }
+            '100%': { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in { animation: fadeIn 0.5s ease-out forwards; }
+    </style>
+    <script>
+        // Tailwind Customizations
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'cosmic-blue': '#312e81', // indigo-900
+                        'stellar-purple': '#79449a', // Custom purple
+                        'light-nebula': '#e0e7ff', // indigo-100
+                        'dark-space': '#111827',  // gray-900
+                    },
+                    // Keyframes defined in <style>
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-dark-space text-light-nebula min-h-screen flex flex-col items-center px-4 py-8">
+
+    <div class="w-full max-w-3xl mx-auto">
+
+        <header class="text-center mb-10">
+            <h1 class="text-4xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 mb-2">
+                StellarBirthdays
+            </h1>
+            <p class="text-lg text-indigo-300">Celebrate your cosmic connection to the stars!</p>
+        </header>
+
+        <section id="input-section" class="bg-gray-800/50 backdrop-blur-sm p-6 rounded-lg shadow-lg mb-8 border border-gray-700">
+            <h2 class="text-2xl font-semibold mb-4 text-center text-indigo-300">Enter Your Birth Date</h2>
+            <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+                <label for="birthdate" class="sr-only">Your Birth Date:</label>
+                <input type="date" id="birthdate" name="birthdate" aria-label="Your Birth Date"
+                       class="bg-gray-700 border border-gray-600 text-light-nebula rounded-md px-4 py-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none placeholder-gray-400 w-full sm:w-auto flex-grow">
+                <button id="calculate-button"
+                        class="w-full sm:w-auto bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-semibold py-2 px-6 rounded-md shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-indigo-500">
+                    Calculate Stellar Birthdays
+                </button>
+            </div>
+            <p id="input-error" class="text-red-400 text-sm mt-3 text-center h-4"></p> </section>
+
+        <section id="results-section" class="mb-8 opacity-0 hidden" aria-live="polite"> <h2 class="text-2xl font-semibold mb-4 text-indigo-300">Upcoming Stellar Birthdays</h2>
+            <div id="results-list" class="space-y-4">
+                </div>
+             <p id="no-results" class="text-center text-gray-400 mt-4 hidden">No upcoming Stellar Birthdays found within 150 light-years with apparent magnitude < 6.0.</p>
+        </section>
+
+        <section id="star-details-section" class="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 z-50 hidden" aria-modal="true" role="dialog"> <div class="bg-gray-800 text-light-nebula p-6 rounded-lg shadow-xl max-w-lg w-full border border-gray-600 relative max-h-[80vh] overflow-y-auto animate-fade-in">
+                 <button id="close-details-button" class="absolute top-3 right-3 text-gray-400 hover:text-white" aria-label="Close star details">
+                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                 </button>
+                 <h3 id="details-star-name" class="text-3xl font-bold mb-4 text-indigo-300">Star Name</h3>
+                 <div class="space-y-3 text-sm">
+                     <p><strong>Scientific Designation:</strong> <span id="details-designation">-</span></p>
+                     <p><strong>Distance:</strong> <span id="details-distance-ly">-</span> light-years (<span id="details-distance-pc">-</span> parsecs)</p>
+                     <p><strong>Constellation:</strong> <span id="details-constellation">-</span></p>
+                     <p><strong>Spectral Type:</strong> <span id="details-spectral">-</span></p>
+                     <p><strong>Apparent Magnitude:</strong> <span id="details-app-mag">-</span></p>
+                     <p><strong>Absolute Magnitude:</strong> <span id="details-abs-mag">-</span></p>
+                     <p><strong>Description:</strong> <span id="details-description">-</span></p>
+                     <p><strong>Mythology:</strong> <span id="details-mythology">-</span></p>
+                     <p><strong>Known Exoplanets:</strong> <span id="details-exoplanets">-</span></p>
+                     <p><strong>External Link:</strong> <a id="details-link" href="#" target="_blank" rel="noopener noreferrer" class="text-purple-400 hover:text-purple-300 underline">Learn More</a></p>
+                 </div>
+            </div>
+        </section>
+
+        <section id="personalized-content-section" class="bg-gray-800/50 backdrop-blur-sm p-6 rounded-lg shadow-lg mt-8 border border-gray-700 opacity-0 hidden" aria-live="polite"> <h2 class="text-2xl font-semibold mb-4 text-indigo-300">Your Next Cosmic Milestone</h2>
+             <div id="personalized-content" class="space-y-4">
+                 </div>
+             <div class="mt-6 text-center">
+                 <p class="text-indigo-300">Enjoying StellarBirthdays?</p>
+                 <a href="#" id="mobile-app-link" class="inline-block mt-2 bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-600 hover:to-cyan-600 text-white font-semibold py-2 px-5 rounded-md shadow hover:shadow-lg">
+                     Get the StellarBirthdays Mobile App!
+                 </a>
+             </div>
+        </section>
+
+        <footer class="text-center mt-12 text-gray-500 text-sm">
+            <p>&copy; <span id="current-year"></span> StellarBirthdays. All rights reserved.</p>
+            <p>Star data sourced from public astronomical catalogs (sample). Calculations are approximate.</p>
+        </footer>
+
+    </div>
+
+    <script>
+        // --- DOM Elements ---
+        const birthdateInput = document.getElementById('birthdate');
+        const calculateButton = document.getElementById('calculate-button');
+        const inputError = document.getElementById('input-error');
+        const resultsSection = document.getElementById('results-section');
+        const resultsList = document.getElementById('results-list');
+        const noResultsMessage = document.getElementById('no-results');
+        const starDetailsSection = document.getElementById('star-details-section');
+        const closeDetailsButton = document.getElementById('close-details-button');
+        const personalizedContentSection = document.getElementById('personalized-content-section');
+        const personalizedContent = document.getElementById('personalized-content');
+        const currentYearSpan = document.getElementById('current-year');
+
+        // --- Constants ---
+        const LIGHT_YEARS_TO_PARSECS = 1 / 3.26156;
+        const DAYS_PER_YEAR = 365.2425; // Average days per year including leap years
+        const MS_PER_DAY = 24 * 60 * 60 * 1000;
+
+        // --- Star Data (Expanded Sample - Not exhaustive for 150ly) ---
+        const starData = [
+            // Original Stars (Criteria: distance_ly <= 100, app_mag < 6.0)
+            { name: "Sirius", designation: "Alpha Canis Majoris", distance_ly: 8.6, spectral: "A1Vm", app_mag: -1.46, abs_mag: 1.42, constellation: "Canis Major", description: "The brightest star in the night sky.", mythology: "Associated with dogs in many cultures.", exoplanets: "Sirius B (white dwarf).", link: "https://en.wikipedia.org/wiki/Sirius" },
+            { name: "Alpha Centauri A", designation: "Rigil Kentaurus", distance_ly: 4.37, spectral: "G2V", app_mag: -0.01, abs_mag: 4.38, constellation: "Centaurus", description: "Closest star system. Part of a triple system.", mythology: "Represents a centaur's foot.", exoplanets: "Candidate b (disputed).", link: "https://en.wikipedia.org/wiki/Alpha_Centauri" },
+            { name: "Alpha Centauri B", designation: "Toliman", distance_ly: 4.37, spectral: "K1V", app_mag: 1.34, abs_mag: 5.71, constellation: "Centaurus", description: "Companion to Alpha Centauri A.", mythology: "Shares mythology.", exoplanets: "Candidate c (disputed).", link: "https://en.wikipedia.org/wiki/Alpha_Centauri" },
+            { name: "Arcturus", designation: "Alpha Boötis", distance_ly: 36.7, spectral: "K0III", app_mag: -0.05, abs_mag: -0.30, constellation: "Boötes", description: "Brightest star in the northern celestial hemisphere.", mythology: "'Guardian of the Bear'.", exoplanets: "None confirmed.", link: "https://en.wikipedia.org/wiki/Arcturus" },
+            { name: "Vega", designation: "Alpha Lyrae", distance_ly: 25.0, spectral: "A0Va", app_mag: 0.03, abs_mag: 0.58, constellation: "Lyra", description: "Former North Pole star. Part of Summer Triangle.", mythology: "Lyre of Orpheus.", exoplanets: "Candidate b.", link: "https://en.wikipedia.org/wiki/Vega" },
+            { name: "Procyon", designation: "Alpha Canis Minoris", distance_ly: 11.46, spectral: "F5 IV-V", app_mag: 0.34, abs_mag: 2.65, constellation: "Canis Minor", description: "Part of Winter Triangle.", mythology: "'Before the dog'.", exoplanets: "Procyon B (white dwarf).", link: "https://en.wikipedia.org/wiki/Procyon" },
+            { name: "Epsilon Eridani", designation: "HD 22049", distance_ly: 10.5, spectral: "K2V", app_mag: 3.73, abs_mag: 6.19, constellation: "Eridanus", description: "Nearby Sun-like star with a known planet.", mythology: "Part of river Eridanus.", exoplanets: "Confirmed: Epsilon Eridani b.", link: "https://en.wikipedia.org/wiki/Epsilon_Eridani" },
+            { name: "Tau Ceti", designation: "HD 10700", distance_ly: 11.9, spectral: "G8.5V", app_mag: 3.50, abs_mag: 5.69, constellation: "Cetus", description: "Nearby Sun-like star, popular in sci-fi.", mythology: "Part of whale Cetus.", exoplanets: "4 candidates.", link: "https://en.wikipedia.org/wiki/Tau_Ceti" },
+            { name: "Altair", designation: "Alpha Aquilae", distance_ly: 16.7, spectral: "A7Vn", app_mag: 0.76, abs_mag: 2.21, constellation: "Aquila", description: "Part of Summer Triangle. Rapid rotator.", mythology: "Represents the eagle.", exoplanets: "None confirmed.", link: "https://en.wikipedia.org/wiki/Altair" },
+            { name: "Fomalhaut", designation: "Alpha Piscis Austrini", distance_ly: 25.1, spectral: "A3V", app_mag: 1.16, abs_mag: 1.72, constellation: "Piscis Austrinus", description: "'Lonely Star of Autumn'. Has debris disk.", mythology: "'Mouth of the fish'.", exoplanets: "Confirmed: Fomalhaut b (Dagon).", link: "https://en.wikipedia.org/wiki/Fomalhaut" },
+            { name: "Pollux", designation: "Beta Geminorum", distance_ly: 33.78, spectral: "K0 III", app_mag: 1.14, abs_mag: 1.09, constellation: "Gemini", description: "Orange giant, brighter than Castor.", mythology: "One of the twins.", exoplanets: "Confirmed: Pollux b (Thestias).", link: "https://en.wikipedia.org/wiki/Pollux_(star)" },
+            { name: "61 Cygni A", designation: "HD 201091", distance_ly: 11.41, spectral: "K5V", app_mag: 5.20, abs_mag: 7.50, constellation: "Cygnus", description: "Binary system, large proper motion.", mythology: "-", exoplanets: "Disputed candidates.", link: "https://en.wikipedia.org/wiki/61_Cygni" },
+
+            // Added Stars (Extending towards 150 ly, App Mag < 6.0)
+            { name: "Capella", designation: "Alpha Aurigae", distance_ly: 42.9, spectral: "G1III+G8III", app_mag: 0.08, abs_mag: -0.48, constellation: "Auriga", description: "Multiple star system, appears as single bright star.", mythology: "Associated with goats (Amalthea).", exoplanets: "None confirmed in close system.", link: "https://en.wikipedia.org/wiki/Capella" },
+            { name: "Aldebaran", designation: "Alpha Tauri", distance_ly: 65.3, spectral: "K5+ III", app_mag: 0.85, abs_mag: -0.63, constellation: "Taurus", description: "Orange giant, 'Eye of the Bull'.", mythology: "Follower of the Pleiades.", exoplanets: "Candidate b.", link: "https://en.wikipedia.org/wiki/Aldebaran" },
+            { name: "Castor", designation: "Alpha Geminorum", distance_ly: 51, spectral: "A1V+A2Vm", app_mag: 1.58, abs_mag: 0.59, constellation: "Gemini", description: "Multiple star system (6 stars total).", mythology: "One of the twins.", exoplanets: "None confirmed.", link: "https://en.wikipedia.org/wiki/Castor_(star)" },
+            { name: "Regulus", designation: "Alpha Leonis", distance_ly: 79.3, spectral: "B8IVn", app_mag: 1.36, abs_mag: -0.52, constellation: "Leo", description: "Brightest star in Leo, multiple system.", mythology: "'Little King'.", exoplanets: "None confirmed.", link: "https://en.wikipedia.org/wiki/Regulus" },
+            { name: "Denebola", designation: "Beta Leonis", distance_ly: 35.9, spectral: "A3Va", app_mag: 2.14, abs_mag: 1.92, constellation: "Leo", description: "Second brightest in Leo.", mythology: "'Tail of the Lion'.", exoplanets: "Debris disk.", link: "https://en.wikipedia.org/wiki/Denebola" },
+            { name: "Algol", designation: "Beta Persei", distance_ly: 90, spectral: "B8V+K0IV+A5V", app_mag: 2.12, abs_mag: -0.18, constellation: "Perseus", description: "Famous eclipsing binary star.", mythology: "'The Demon Star', eye of Medusa.", exoplanets: "None confirmed beyond stellar components.", link: "https://en.wikipedia.org/wiki/Algol" },
+            { name: "Alphecca (Gemma)", designation: "Alpha Coronae Borealis", distance_ly: 75, spectral: "A0V+G5V", app_mag: 2.22, abs_mag: 0.42, constellation: "Corona Borealis", description: "Eclipsing binary, brightest in constellation.", mythology: "'The Broken Ring'.", exoplanets: "None confirmed.", link: "https://en.wikipedia.org/wiki/Alpha_Coronae_Borealis" },
+            { name: "Menkalinan", designation: "Beta Aurigae", distance_ly: 81.1, spectral: "A1mIV+A1mIV", app_mag: 1.90, abs_mag: -0.11, constellation: "Auriga", description: "Eclipsing binary system.", mythology: "'Shoulder of the Charioteer'.", exoplanets: "None confirmed.", link: "https://en.wikipedia.org/wiki/Beta_Aurigae" },
+            { name: "Zosma", designation: "Delta Leonis", distance_ly: 57.7, spectral: "A4V", app_mag: 2.56, abs_mag: 1.32, constellation: "Leo", description: "Rapidly rotating star.", mythology: "'Girdle' or 'loincloth'.", exoplanets: "None confirmed.", link: "https://en.wikipedia.org/wiki/Delta_Leonis" },
+            { name: "Beta Trianguli Australis", designation: "Beta TrA", distance_ly: 40.1, spectral: "F1V", app_mag: 2.85, abs_mag: 2.08, constellation: "Triangulum Australe", description: "Brightest star in the constellation.", mythology: "-", exoplanets: "None confirmed.", link: "https://en.wikipedia.org/wiki/Beta_Trianguli_Australis" },
+            { name: "Mu Velorum", designation: "Mu Vel", distance_ly: 117, spectral: "G5III+G2V", app_mag: 2.69, abs_mag: -0.04, constellation: "Vela", description: "Binary star system.", mythology: "-", exoplanets: "None confirmed.", link: "https://en.wikipedia.org/wiki/Mu_Velorum" },
+            { name: "Gamma Leonis (Algieba)", designation: "Gamma Leo", distance_ly: 130, spectral: "K0III+G7III", app_mag: 2.01, abs_mag: -0.93, constellation: "Leo", description: "Binary star system, known for visual beauty.", mythology: "'The Forehead'.", exoplanets: "Confirmed: Gamma Leonis b.", link: "https://en.wikipedia.org/wiki/Algieba" },
+            { name: "Iota Centauri", designation: "Iota Cen", distance_ly: 58.6, spectral: "A2V", app_mag: 2.73, abs_mag: 1.46, constellation: "Centaurus", description: "White A-type main-sequence star.", mythology: "-", exoplanets: "Debris disk.", link: "https://en.wikipedia.org/wiki/Iota_Centauri" },
+            { name: "Rasalhague", designation: "Alpha Ophiuchi", distance_ly: 48.6, spectral: "A5III", app_mag: 2.07, abs_mag: 1.22, constellation: "Ophiuchus", description: "Brightest star in Ophiuchus.", mythology: "'Head of the Serpent Charmer'.", exoplanets: "None confirmed.", link: "https://en.wikipedia.org/wiki/Alpha_Ophiuchi" },
+             { name: "Delta Serpentis", designation: "Delta Ser", distance_ly: 210, spectral: "F0IV", app_mag: 3.80, abs_mag: -0.29, constellation: "Serpens", description: "Subgiant star.", mythology: "-", exoplanets: "None confirmed.", link: "https://en.wikipedia.org/wiki/Delta_Serpentis" }, // Note: > 150 ly, will be filtered
+             { name: "Zeta Ophiuchi", designation: "Zeta Oph", distance_ly: 460, spectral: "O9.5V", app_mag: 2.57, abs_mag: -3.20, constellation: "Ophiuchus", description: "Very hot blue star, runaway star.", mythology: "-", exoplanets: "None confirmed.", link: "https://en.wikipedia.org/wiki/Zeta_Ophiuchi" }, // Note: > 150 ly, will be filtered
+        ];
+
+        // --- Filtered Star Data (based on updated criteria) ---
+        // Memoize filtered data
+        const filteredStarData = starData.filter(star =>
+            star.distance_ly <= 150 && star.app_mag < 6.0 // Updated distance limit
+        );
+
+        // --- Initial Setup ---
+        currentYearSpan.textContent = new Date().getFullYear();
+        birthdateInput.max = new Date().toISOString().split("T")[0];
+
+        // --- Event Listeners ---
+        calculateButton.addEventListener('click', handleCalculation);
+        closeDetailsButton.addEventListener('click', hideStarDetails);
+        resultsList.addEventListener('click', handleResultClick);
+        starDetailsSection.addEventListener('click', (event) => {
+            if (event.target === starDetailsSection) hideStarDetails();
+        });
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape' && !starDetailsSection.classList.contains('hidden')) {
+                hideStarDetails();
+            }
+        });
+
+        // --- Helper Functions ---
+        function parseDateUTC(dateString) {
+            const parts = dateString.split('-');
+            if (parts.length !== 3) return null;
+            const year = parseInt(parts[0], 10);
+            const month = parseInt(parts[1], 10) - 1;
+            const day = parseInt(parts[2], 10);
+            if (isNaN(year) || isNaN(month) || isNaN(day)) return null;
+            const date = new Date(Date.UTC(year, month, day));
+            if (date.getUTCFullYear() !== year || date.getUTCMonth() !== month || date.getUTCDate() !== day) {
+                return null;
+            }
+            return date;
+        }
+
+        function addYearsToDate(startDateUTC, yearsToAdd) {
+            const daysToAdd = yearsToAdd * DAYS_PER_YEAR;
+            const futureTime = startDateUTC.getTime() + daysToAdd * MS_PER_DAY;
+            return new Date(futureTime);
+        }
+
+        function formatDate(dateUTC) {
+            return dateUTC.toLocaleDateString('en-US', {
+                year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC'
+            });
+        }
+
+        function convertLightYearsToParsecs(lightYears) {
+            return (lightYears * LIGHT_YEARS_TO_PARSECS).toFixed(2);
+        }
+
+        function getOrdinalSuffix(n) {
+            const s = ["th", "st", "nd", "rd"];
+            const v = n % 100;
+            return s[(v - 20) % 10] || s[v] || s[0];
+        }
+
+        // --- Core Calculation Logic ---
+        function handleCalculation() {
+            // 1. Clear & Validate
+            inputError.textContent = "";
+            resultsList.innerHTML = "";
+            personalizedContent.innerHTML = "";
+            resultsSection.classList.add('opacity-0', 'hidden');
+            personalizedContentSection.classList.add('opacity-0', 'hidden');
+            noResultsMessage.classList.add('hidden');
+
+            const birthDateString = birthdateInput.value;
+            if (!birthDateString) {
+                inputError.textContent = "Please enter your birth date."; return;
+            }
+            const birthDateUTC = parseDateUTC(birthDateString);
+            if (!birthDateUTC) {
+                 inputError.textContent = "Invalid date format. Please use YYYY-MM-DD."; return;
+            }
+
+            // 2. Get Today UTC
+            const today = new Date();
+            const todayUTC = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate()));
+
+            // 3. Calculate
+            const upcomingBirthdays = [];
+            filteredStarData.forEach(star => { // Use pre-filtered data
+                const lightTravelTimeYears = star.distance_ly;
+                const sbdUTC = addYearsToDate(birthDateUTC, lightTravelTimeYears);
+                const ageOnSBD = Math.floor(lightTravelTimeYears);
+                if (sbdUTC >= todayUTC) {
+                    upcomingBirthdays.push({ sbd: sbdUTC, star: star, age: ageOnSBD });
+                }
+            });
+
+            // 4. Sort
+            upcomingBirthdays.sort((a, b) => a.sbd.getTime() - b.sbd.getTime());
+
+            // 5. Display
+            displayResults(upcomingBirthdays);
+            if (upcomingBirthdays.length > 0) {
+                displayPersonalizedContent(upcomingBirthdays[0], birthDateUTC);
+                personalizedContentSection.classList.remove('hidden');
+                setTimeout(() => personalizedContentSection.classList.remove('opacity-0'), 0);
+                personalizedContentSection.classList.add('animate-fade-in');
+            } else {
+                 personalizedContentSection.classList.add('hidden', 'opacity-0');
+            }
+
+            // 6. Show Results Section
+            resultsSection.classList.remove('hidden');
+            setTimeout(() => resultsSection.classList.remove('opacity-0'), 0);
+            resultsSection.classList.add('animate-fade-in');
+        }
+
+        // --- UI Display Functions ---
+        function displayResults(birthdays) {
+            resultsList.innerHTML = '';
+            if (birthdays.length === 0) {
+                noResultsMessage.classList.remove('hidden'); return;
+            }
+            noResultsMessage.classList.add('hidden');
+
+            birthdays.forEach((bday, index) => {
+                const star = bday.star;
+                const distancePc = convertLightYearsToParsecs(star.distance_ly);
+                const formattedSBD = formatDate(bday.sbd);
+                const listItem = document.createElement('div');
+                listItem.className = "bg-gray-800/50 backdrop-blur-sm p-4 rounded-lg shadow border border-gray-700 cursor-pointer hover:bg-gray-700/60 animate-fade-in opacity-0";
+                listItem.style.animationDelay = `${index * 0.05}s`;
+                listItem.dataset.starName = star.name;
+                listItem.innerHTML = `
+                    <p class="text-lg font-semibold">Stellar Birthday: <span class="text-purple-400">${formattedSBD}</span></p>
+                    <p>Star: <span class="font-medium text-indigo-300">${star.name}</span> (${star.distance_ly} light-years / ${distancePc} parsecs)</p>
+                    <p>Your Age: <span class="font-medium">${bday.age}</span></p>
+                `;
+                resultsList.appendChild(listItem);
+                void listItem.offsetWidth; // Reflow
+                listItem.classList.remove('opacity-0'); // Animate
+            });
+        }
+
+        function displayPersonalizedContent(nextBirthday, birthDateUTC) {
+            const star = nextBirthday.star;
+            const formattedSBD = formatDate(nextBirthday.sbd);
+            const formattedBirthDate = formatDate(birthDateUTC);
+            let story = `
+                <h3 class="text-xl font-semibold text-indigo-300">Your Next Milestone: ${star.name}</h3>
+                <p class="italic">On <span class="font-semibold text-purple-300">${formattedSBD}</span>, light that left the star <span class="font-semibold text-indigo-300">${star.name}</span> around the time you were born (${formattedBirthDate}) will finally complete its ${star.distance_ly}-light-year journey to Earth.</p>
+                <p>Imagine that photon's incredible voyage across the cosmos, arriving just in time for your ${nextBirthday.age}${getOrdinalSuffix(nextBirthday.age)} Stellar Birthday!</p>
+                <p>${star.description ? `Known fact: ${star.description}` : ''}</p>
+                ${star.mythology ? `<p>Mythology: ${star.mythology}</p>` : ''}
+            `;
+            personalizedContent.innerHTML = story;
+        }
+
+        function handleResultClick(event) {
+            const resultItem = event.target.closest('[data-star-name]');
+            if (resultItem) {
+                showStarDetails(resultItem.dataset.starName);
+            }
+        }
+
+        function showStarDetails(starName) {
+            const star = filteredStarData.find(s => s.name === starName); // Use filtered data
+            if (!star) { console.error("Star not found:", starName); return; }
+
+            const distanceLy = star.distance_ly ?? '-';
+            const distancePc = distanceLy !== '-' ? convertLightYearsToParsecs(distanceLy) : '-';
+
+            document.getElementById('details-star-name').textContent = star.name || 'Unknown Star';
+            document.getElementById('details-designation').textContent = star.designation || '-';
+            document.getElementById('details-distance-ly').textContent = distanceLy;
+            document.getElementById('details-distance-pc').textContent = distancePc;
+            document.getElementById('details-constellation').textContent = star.constellation || '-';
+            document.getElementById('details-spectral').textContent = star.spectral || '-';
+            document.getElementById('details-app-mag').textContent = star.app_mag !== undefined ? star.app_mag : '-';
+            document.getElementById('details-abs-mag').textContent = star.abs_mag !== undefined ? star.abs_mag : '-';
+            document.getElementById('details-description').textContent = star.description || 'No description available.';
+            document.getElementById('details-mythology').textContent = star.mythology || 'No mythology information available.';
+            document.getElementById('details-exoplanets').textContent = star.exoplanets || 'Information not available.';
+
+            const detailsLink = document.getElementById('details-link');
+            if (star.link) {
+                 detailsLink.href = star.link; detailsLink.style.display = 'inline';
+            } else {
+                 detailsLink.style.display = 'none';
+            }
+
+            starDetailsSection.classList.remove('hidden');
+            requestAnimationFrame(() => { closeDetailsButton.focus(); });
+        }
+
+        function hideStarDetails() {
+            starDetailsSection.classList.add('hidden');
+        }
+
+    </script>
+
+</body>
+</html>
