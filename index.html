@@ -12,22 +12,31 @@
         /* Apply Inter font globally */
         body {
             font-family: 'Inter', sans-serif;
-            /* Subtle background pattern */
-            background-image: radial-gradient(circle at top right, rgba(121, 68, 154, 0.1), transparent),
-                              radial-gradient(circle at bottom left, rgba(49, 46, 129, 0.1), transparent);
-            background-attachment: fixed; /* Keep pattern fixed during scroll */
+            /* Starry night background */
+            background-image: url("https://image.pollinations.ai/prompt/milky%20way%20stars%20starry%20sky%20galaxy%20night%20dark%20background%204k%20hd"); /* Placeholder - Replace with actual image URL */
+            background-color: #111827; /* Fallback dark color */
+            background-size: cover; /* Cover the entire viewport */
+            background-position: center; /* Center the image */
+            background-attachment: fixed; /* Keep background fixed during scroll */
         }
-        /* Custom scrollbar */
+        /* Custom scrollbar - Dark theme */
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: #1f2937; } /* gray-800 */
         ::-webkit-scrollbar-thumb { background: #4b5563; border-radius: 4px; } /* gray-600 */
         ::-webkit-scrollbar-thumb:hover { background: #6b7280; } /* gray-500 */
-        /* Style for the date input placeholder */
-        input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(0.6); cursor: pointer; }
+
+        /* Style for the date input placeholder icon on dark bg*/
+         input[type="date"]::-webkit-calendar-picker-indicator {
+            filter: invert(0.8); /* Make calendar icon lighter */
+            cursor: pointer;
+         }
+
         /* Basic transition for hover effects */
         button, a, [data-star-name] { transition: all 0.2s ease-in-out; }
+
         /* Ensure hidden sections don't affect layout */
         .hidden { display: none; }
+
         /* Fade-in animation */
         @keyframes fadeIn {
             '0%': { opacity: 0; transform: translateY(10px); }
@@ -36,15 +45,15 @@
         .animate-fade-in { animation: fadeIn 0.5s ease-out forwards; }
     </style>
     <script>
-        // Tailwind Customizations
+        // Tailwind Customizations (Optional - Define dark theme colors if needed)
         tailwind.config = {
             theme: {
                 extend: {
-                    colors: {
-                        'cosmic-blue': '#312e81', // indigo-900
-                        'stellar-purple': '#79449a', // Custom purple
-                        'light-nebula': '#e0e7ff', // indigo-100
-                        'dark-space': '#111827',  // gray-900
+                     colors: {
+                        'cosmic-blue': '#312e81', // indigo-900 (example)
+                        'stellar-purple': '#79449a', // Custom purple (example)
+                        'light-nebula': '#e0e7ff', // indigo-100 (example for text)
+                        'dark-space': '#111827',  // gray-900 (example for bg)
                     },
                     // Keyframes defined in <style>
                 }
@@ -52,7 +61,7 @@
         }
     </script>
 </head>
-<body class="bg-dark-space text-light-nebula min-h-screen flex flex-col items-center px-4 py-8">
+<body class="bg-dark-space text-gray-200 min-h-screen flex flex-col items-center px-4 py-8">
 
     <div class="w-full max-w-3xl mx-auto">
 
@@ -60,35 +69,36 @@
             <h1 class="text-4xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 mb-2">
                 StellarBirthdays
             </h1>
-            <p class="text-lg text-indigo-300">Celebrate your connection to the stars!</p>
+            <p class="text-lg text-indigo-300">Celebrate your cosmic connection to the stars!</p>
         </header>
 
-        <section id="input-section" class="bg-gray-800/50 backdrop-blur-sm p-6 rounded-lg shadow-lg mb-8 border border-gray-700">
+        <section id="input-section" class="bg-gray-900/60 backdrop-blur-md p-6 rounded-lg shadow-lg mb-8 border border-gray-700">
             <h2 class="text-2xl font-semibold mb-4 text-center text-indigo-300">Enter Your Birth Date</h2>
             <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
                 <label for="birthdate" class="sr-only">Your Birth Date:</label>
                 <input type="date" id="birthdate" name="birthdate" aria-label="Your Birth Date"
-                       class="bg-gray-700 border border-gray-600 text-light-nebula rounded-md px-4 py-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none placeholder-gray-400 w-full sm:w-auto flex-grow">
+                       class="bg-gray-700 border border-gray-600 text-gray-100 rounded-md px-4 py-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none focus:border-indigo-500 placeholder-gray-400 w-full sm:w-auto flex-grow">
                 <button id="calculate-button"
-                        class="w-full sm:w-auto bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-semibold py-2 px-6 rounded-md shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-indigo-500">
+                        class="w-full sm:w-auto bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-semibold py-2 px-6 rounded-md shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-900 focus:ring-indigo-500">
                     Calculate Stellar Birthdays
                 </button>
             </div>
-            <p id="input-error" class="text-red-400 text-sm mt-3 text-center h-4"></p> </section>
-
-        <section id="results-section" class="mb-8 opacity-0 hidden" aria-live="polite"> <h2 class="text-2xl font-semibold mb-4 text-indigo-300">Upcoming Stellar Birthdays</h2>
-            <div id="results-list" class="space-y-4">
-                </div>
-             <p id="no-results" class="text-center text-gray-400 mt-4 hidden">No upcoming Stellar Birthdays found within 150 light-years with apparent magnitude < 6.0.</p>
+            <p id="input-error" class="text-red-400 text-sm mt-3 text-center h-4"></p>
         </section>
 
-        <section id="star-details-section" class="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 z-50 hidden" aria-modal="true" role="dialog"> <div class="bg-gray-800 text-light-nebula p-6 rounded-lg shadow-xl max-w-lg w-full border border-gray-600 relative max-h-[80vh] overflow-y-auto animate-fade-in">
+        <section id="results-section" class="mb-8 opacity-0 hidden" aria-live="polite">
+             <h2 class="text-2xl font-semibold mb-4 text-indigo-300">Upcoming Stellar Birthdays</h2>
+            <div id="results-list" class="space-y-4">
+                </div>
+             <p id="no-results" class="text-center text-gray-500 mt-4 hidden">No upcoming Stellar Birthdays found within 150 light-years with apparent magnitude < 6.0.</p>
+        </section>
+
+        <section id="star-details-section" class="fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 z-50 hidden" aria-modal="true" role="dialog"> <div class="bg-gray-800 text-gray-200 p-6 rounded-lg shadow-xl max-w-lg w-full border border-gray-600 relative max-h-[80vh] overflow-y-auto animate-fade-in">
                  <button id="close-details-button" class="absolute top-3 right-3 text-gray-400 hover:text-white" aria-label="Close star details">
                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                  </button>
                  <h3 id="details-star-name" class="text-3xl font-bold mb-4 text-indigo-300">Star Name</h3>
-                 <div class="space-y-3 text-sm">
-                     <p><strong>Scientific Designation:</strong> <span id="details-designation">-</span></p>
+                 <div class="space-y-3 text-sm text-gray-300"> <p><strong>Scientific Designation:</strong> <span id="details-designation">-</span></p>
                      <p><strong>Distance:</strong> <span id="details-distance-ly">-</span> light-years (<span id="details-distance-pc">-</span> parsecs)</p>
                      <p><strong>Constellation:</strong> <span id="details-constellation">-</span></p>
                      <p><strong>Spectral Type:</strong> <span id="details-spectral">-</span></p>
@@ -102,8 +112,9 @@
             </div>
         </section>
 
-        <section id="personalized-content-section" class="bg-gray-800/50 backdrop-blur-sm p-6 rounded-lg shadow-lg mt-8 border border-gray-700 opacity-0 hidden" aria-live="polite"> <h2 class="text-2xl font-semibold mb-4 text-indigo-300">Your Next Cosmic Milestone</h2>
-             <div id="personalized-content" class="space-y-4">
+        <section id="personalized-content-section" class="bg-gray-900/60 backdrop-blur-md p-6 rounded-lg shadow-lg mt-8 border border-gray-700 opacity-0 hidden" aria-live="polite">
+             <h2 class="text-2xl font-semibold mb-4 text-indigo-300">Your Next Cosmic Milestone</h2>
+             <div id="personalized-content" class="space-y-4 text-gray-300">
                  </div>
              <div class="mt-6 text-center">
                  <p class="text-indigo-300">Enjoying StellarBirthdays?</p>
@@ -113,7 +124,7 @@
              </div>
         </section>
 
-        <footer class="text-center mt-12 text-gray-500 text-sm">
+        <footer class="text-center mt-12 text-gray-400 text-sm">
             <p>&copy; <span id="current-year"></span> StellarBirthdays. All rights reserved.</p>
             <p>Star data sourced from public astronomical catalogs (sample). Calculations are approximate.</p>
         </footer>
@@ -136,13 +147,12 @@
 
         // --- Constants ---
         const LIGHT_YEARS_TO_PARSECS = 1 / 3.26156;
-        const DAYS_PER_YEAR = 365.2425; // Average days per year including leap years
+        const DAYS_PER_YEAR = 365.2425;
         const MS_PER_DAY = 24 * 60 * 60 * 1000;
 
-        // --- Star Data (Expanded Sample - Not exhaustive for 150ly) ---
-        // --- Star Data (Further Expanded Sample - Not exhaustive for 150ly) ---
+        // --- Star Data (Further Expanded Sample) ---
         const starData = [
-            // Original + First Expansion
+             // Original + Expansions
             { name: "Sirius", designation: "Alpha CMa", distance_ly: 8.6, spectral: "A1Vm", app_mag: -1.46, abs_mag: 1.42, constellation: "Canis Major", description: "The brightest star in the night sky.", mythology: "Associated with dogs.", exoplanets: "Sirius B (WD).", link: "https://en.wikipedia.org/wiki/Sirius" },
             { name: "Alpha Centauri A", designation: "Alpha Cen A", distance_ly: 4.37, spectral: "G2V", app_mag: -0.01, abs_mag: 4.38, constellation: "Centaurus", description: "Closest star system.", mythology: "Centaur's foot.", exoplanets: "Candidate b.", link: "https://en.wikipedia.org/wiki/Alpha_Centauri" },
             { name: "Alpha Centauri B", designation: "Alpha Cen B", distance_ly: 4.37, spectral: "K1V", app_mag: 1.34, abs_mag: 5.71, constellation: "Centaurus", description: "Companion to Alpha Cen A.", mythology: "Shares mythology.", exoplanets: "Candidate c.", link: "https://en.wikipedia.org/wiki/Alpha_Centauri" },
@@ -169,8 +179,6 @@
             { name: "Epsilon Eridani", designation: "HD 22049", distance_ly: 10.5, spectral: "K2V", app_mag: 3.73, abs_mag: 6.19, constellation: "Eridanus", description: "Nearby Sun-like star.", mythology: "Part of river Eridanus.", exoplanets: "Confirmed: Eps Eri b.", link: "https://en.wikipedia.org/wiki/Epsilon_Eridani" },
             { name: "Tau Ceti", designation: "HD 10700", distance_ly: 11.9, spectral: "G8.5V", app_mag: 3.50, abs_mag: 5.69, constellation: "Cetus", description: "Nearby Sun-like star.", mythology: "Part of whale Cetus.", exoplanets: "4 candidates.", link: "https://en.wikipedia.org/wiki/Tau_Ceti" },
             { name: "61 Cygni A", designation: "HD 201091", distance_ly: 11.41, spectral: "K5V", app_mag: 5.20, abs_mag: 7.50, constellation: "Cygnus", description: "Binary system.", mythology: "Large proper motion.", exoplanets: "Disputed candidates.", link: "https://en.wikipedia.org/wiki/61_Cygni" },
-
-            // Second Expansion (New additions based on search)
             { name: "Achernar", designation: "Alpha Eri", distance_ly: 139, spectral: "B6Vep", app_mag: 0.46, abs_mag: -2.77, constellation: "Eridanus", description: "Very oblate rapidly rotating star.", mythology: "'End of the river'.", exoplanets: "None confirmed.", link: "https://en.wikipedia.org/wiki/Achernar" },
             { name: "Elnath", designation: "Beta Tau", distance_ly: 134, spectral: "B7III", app_mag: 1.65, abs_mag: -1.37, constellation: "Taurus", description: "Second brightest in Taurus.", mythology: "'The Butting One'.", exoplanets: "None confirmed.", link: "https://en.wikipedia.org/wiki/Elnath" },
             { name: "Miaplacidus", designation: "Beta Car", distance_ly: 113, spectral: "A1III", app_mag: 1.69, abs_mag: -0.99, constellation: "Carina", description: "Second brightest in Carina.", mythology: "'Placid waters'.", exoplanets: "None confirmed.", link: "https://en.wikipedia.org/wiki/Miaplacidus" },
@@ -194,16 +202,13 @@
             { name: "Chi¹ Orionis", designation: "Chi¹ Ori", distance_ly: 28.3, spectral: "G0V", app_mag: 4.39, abs_mag: 4.70, constellation: "Orion", description: "Sun-like star, binary.", mythology: "-", exoplanets: "None confirmed.", link: "https://en.wikipedia.org/wiki/Chi1_Orionis" },
             { name: "47 Ursae Majoris", designation: "47 UMa", distance_ly: 45.9, spectral: "G1V", app_mag: 5.03, abs_mag: 4.29, constellation: "Ursa Major", description: "Sun-like star with planets.", mythology: "-", exoplanets: "Confirmed: 47 UMa b, c, d.", link: "https://en.wikipedia.org/wiki/47_Ursae_Majoris" },
             { name: "Delta Pavonis", designation: "Delta Pav", distance_ly: 19.9, spectral: "G8IV", app_mag: 3.56, abs_mag: 4.62, constellation: "Pavo", description: "Nearby subgiant star.", mythology: "-", exoplanets: "Candidate.", link: "https://en.wikipedia.org/wiki/Delta_Pavonis" },
-
-            // Examples beyond 150 ly (will be filtered out but test filter)
             { name: "Delta Serpentis", designation: "Delta Ser", distance_ly: 210, spectral: "F0IV", app_mag: 3.80, abs_mag: -0.29, constellation: "Serpens", description: "Subgiant star.", mythology: "-", exoplanets: "None confirmed.", link: "https://en.wikipedia.org/wiki/Delta_Serpentis" },
             { name: "Zeta Ophiuchi", designation: "Zeta Oph", distance_ly: 460, spectral: "O9.5V", app_mag: 2.57, abs_mag: -3.20, constellation: "Ophiuchus", description: "Very hot blue star.", mythology: "-", exoplanets: "None confirmed.", link: "https://en.wikipedia.org/wiki/Zeta_Ophiuchi" },
         ];
 
         // --- Filtered Star Data (based on updated criteria) ---
-        // Memoize filtered data
         const filteredStarData = starData.filter(star =>
-            star.distance_ly <= 500 && star.app_mag < 6.0 // Updated distance limit
+            star.distance_ly <= 500 && star.app_mag < 6.0 // Keep filter at 150 ly
         );
 
         // --- Initial Setup ---
@@ -251,10 +256,14 @@
         }
 
         function convertLightYearsToParsecs(lightYears) {
+            // Added check for null/undefined input
+            if (lightYears == null) return '-';
             return (lightYears * LIGHT_YEARS_TO_PARSECS).toFixed(2);
         }
 
         function getOrdinalSuffix(n) {
+            // Added check for null/undefined input
+            if (n == null) return '';
             const s = ["th", "st", "nd", "rd"];
             const v = n % 100;
             return s[(v - 20) % 10] || s[v] || s[0];
@@ -262,7 +271,6 @@
 
         // --- Core Calculation Logic ---
         function handleCalculation() {
-            // 1. Clear & Validate
             inputError.textContent = "";
             resultsList.innerHTML = "";
             personalizedContent.innerHTML = "";
@@ -279,13 +287,15 @@
                  inputError.textContent = "Invalid date format. Please use YYYY-MM-DD."; return;
             }
 
-            // 2. Get Today UTC
             const today = new Date();
             const todayUTC = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate()));
 
-            // 3. Calculate
             const upcomingBirthdays = [];
-            filteredStarData.forEach(star => { // Use pre-filtered data
+            // Ensure filteredStarData is used
+            filteredStarData.forEach(star => {
+                // Added check for valid distance_ly
+                if (star.distance_ly == null) return;
+
                 const lightTravelTimeYears = star.distance_ly;
                 const sbdUTC = addYearsToDate(birthDateUTC, lightTravelTimeYears);
                 const ageOnSBD = Math.floor(lightTravelTimeYears);
@@ -294,10 +304,8 @@
                 }
             });
 
-            // 4. Sort
             upcomingBirthdays.sort((a, b) => a.sbd.getTime() - b.sbd.getTime());
 
-            // 5. Display
             displayResults(upcomingBirthdays);
             if (upcomingBirthdays.length > 0) {
                 displayPersonalizedContent(upcomingBirthdays[0], birthDateUTC);
@@ -308,7 +316,6 @@
                  personalizedContentSection.classList.add('hidden', 'opacity-0');
             }
 
-            // 6. Show Results Section
             resultsSection.classList.remove('hidden');
             setTimeout(() => resultsSection.classList.remove('opacity-0'), 0);
             resultsSection.classList.add('animate-fade-in');
@@ -327,13 +334,15 @@
                 const distancePc = convertLightYearsToParsecs(star.distance_ly);
                 const formattedSBD = formatDate(bday.sbd);
                 const listItem = document.createElement('div');
-                listItem.className = "bg-gray-800/50 backdrop-blur-sm p-4 rounded-lg shadow border border-gray-700 cursor-pointer hover:bg-gray-700/60 animate-fade-in opacity-0";
+                // Updated list item style for dark theme
+                listItem.className = "bg-gray-900/60 backdrop-blur-md p-4 rounded-lg shadow border border-gray-700 cursor-pointer hover:bg-gray-800/70 animate-fade-in opacity-0";
                 listItem.style.animationDelay = `${index * 0.05}s`;
                 listItem.dataset.starName = star.name;
+                 // Updated text colors for dark theme
                 listItem.innerHTML = `
-                    <p class="text-lg font-semibold">Stellar Birthday: <span class="text-purple-400">${formattedSBD}</span></p>
-                    <p>Star: <span class="font-medium text-indigo-300">${star.name}</span> (${star.distance_ly} light-years / ${distancePc} parsecs)</p>
-                    <p>Your Age: <span class="font-medium">${bday.age}</span></p>
+                    <p class="text-lg font-semibold text-gray-100">Stellar Birthday: <span class="text-purple-400 font-bold">${formattedSBD}</span></p>
+                    <p class="text-sm text-gray-400">Star: <span class="font-medium text-indigo-300">${star.name || 'N/A'}</span> (${star.distance_ly ?? '?'} light-years / ${distancePc} parsecs)</p>
+                    <p class="text-sm text-gray-400">Your Age: <span class="font-medium text-gray-200">${bday.age ?? '?'}</span></p>
                 `;
                 resultsList.appendChild(listItem);
                 void listItem.offsetWidth; // Reflow
@@ -345,12 +354,13 @@
             const star = nextBirthday.star;
             const formattedSBD = formatDate(nextBirthday.sbd);
             const formattedBirthDate = formatDate(birthDateUTC);
+             // Updated text colors for dark theme
             let story = `
-                <h3 class="text-xl font-semibold text-indigo-300">Your Next Milestone: ${star.name}</h3>
-                <p class="italic">On <span class="font-semibold text-purple-300">${formattedSBD}</span>, light that left the star <span class="font-semibold text-indigo-300">${star.name}</span> around the time you were born (${formattedBirthDate}) will finally complete its ${star.distance_ly}-light-year journey to Earth.</p>
-                <p>Imagine that photon's incredible voyage across the cosmos, arriving just in time for your ${nextBirthday.age}${getOrdinalSuffix(nextBirthday.age)} Stellar Birthday!</p>
-                <p>${star.description ? `Known fact: ${star.description}` : ''}</p>
-                ${star.mythology ? `<p>Mythology: ${star.mythology}</p>` : ''}
+                <h3 class="text-xl font-semibold text-indigo-300">${star.name || 'This Star'}: Your Next Milestone</h3>
+                <p class="italic text-gray-400">On <span class="font-semibold text-purple-300">${formattedSBD}</span>, light that left the star <span class="font-semibold text-gray-200">${star.name || 'nearby'}</span> around the time you were born (${formattedBirthDate}) will finally complete its ${star.distance_ly ?? 'cosmic'}-light-year journey to Earth.</p>
+                <p class="text-gray-300">Imagine that photon's incredible voyage across the cosmos, arriving just in time for your ${nextBirthday.age ?? 'next'}${getOrdinalSuffix(nextBirthday.age)} Stellar Birthday!</p>
+                <p class="text-sm text-gray-400">${star.description ? `Known fact: ${star.description}` : ''}</p>
+                ${star.mythology ? `<p class="text-sm text-gray-400">Mythology: ${star.mythology}</p>` : ''}
             `;
             personalizedContent.innerHTML = story;
         }
@@ -358,12 +368,17 @@
         function handleResultClick(event) {
             const resultItem = event.target.closest('[data-star-name]');
             if (resultItem) {
-                showStarDetails(resultItem.dataset.starName);
+                const starName = resultItem.dataset.starName;
+                if (starName) {
+                    showStarDetails(starName);
+                } else {
+                    console.warn("Clicked item missing data-star-name attribute.");
+                }
             }
         }
 
         function showStarDetails(starName) {
-            const star = filteredStarData.find(s => s.name === starName); // Use filtered data
+            const star = filteredStarData.find(s => s.name === starName);
             if (!star) { console.error("Star not found:", starName); return; }
 
             const distanceLy = star.distance_ly ?? '-';
