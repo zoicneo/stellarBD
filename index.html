@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>StellarBirthdays</title>
+    <title>StellarBirthdays - Your Cosmic Connection</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -15,9 +15,9 @@
             /* Starry night background */
             background-image: url("https://image.pollinations.ai/prompt/milky%20way%20stars%20starry%20sky%20galaxy%20night%20dark%20background%204k%20hd"); /* Placeholder - Replace with actual image URL */
             background-color: #111827; /* Fallback dark color */
-            background-size: cover; /* Cover the entire viewport */
-            background-position: center; /* Center the image */
-            background-attachment: fixed; /* Keep background fixed during scroll */
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
         }
         /* Custom scrollbar - Dark theme */
         ::-webkit-scrollbar { width: 8px; }
@@ -43,19 +43,22 @@
             '100%': { opacity: 1; transform: translateY(0); }
         }
         .animate-fade-in { animation: fadeIn 0.5s ease-out forwards; }
+
+        /* Styles for disabled pagination buttons */
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
     </style>
     <script>
-        // Tailwind Customizations (Optional - Define dark theme colors if needed)
+        // Tailwind Customizations (Optional)
         tailwind.config = {
             theme: {
                 extend: {
                      colors: {
-                        'cosmic-blue': '#312e81', // indigo-900 (example)
-                        'stellar-purple': '#79449a', // Custom purple (example)
-                        'light-nebula': '#e0e7ff', // indigo-100 (example for text)
-                        'dark-space': '#111827',  // gray-900 (example for bg)
+                        'cosmic-blue': '#312e81', 'stellar-purple': '#79449a',
+                        'light-nebula': '#e0e7ff', 'dark-space': '#111827',
                     },
-                    // Keyframes defined in <style>
                 }
             }
         }
@@ -69,7 +72,7 @@
             <h1 class="text-4xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 mb-2">
                 StellarBirthdays
             </h1>
-            <p class="text-lg text-indigo-300">Celebrate your connection to the stars!</p>
+            <p class="text-lg text-indigo-300">Celebrate your cosmic connection to the stars!</p>
         </header>
 
         <section id="input-section" class="bg-gray-900/60 backdrop-blur-md p-6 rounded-lg shadow-lg mb-8 border border-gray-700">
@@ -91,14 +94,26 @@
             <div id="results-list" class="space-y-4">
                 </div>
              <p id="no-results" class="text-center text-gray-500 mt-4 hidden">No upcoming Stellar Birthdays found within 150 light-years with apparent magnitude < 6.0.</p>
+
+             <div id="pagination-controls" class="mt-6 flex justify-between items-center hidden">
+                 <button id="prev-button" class="bg-gray-600 hover:bg-gray-500 text-white font-semibold py-2 px-4 rounded-md shadow disabled:opacity-50 disabled:cursor-not-allowed">
+                     &larr; Previous
+                 </button>
+                 <span id="page-info" class="text-sm text-gray-400">Page 1 of 1</span>
+                 <button id="next-button" class="bg-gray-600 hover:bg-gray-500 text-white font-semibold py-2 px-4 rounded-md shadow disabled:opacity-50 disabled:cursor-not-allowed">
+                     Next &rarr;
+                 </button>
+             </div>
         </section>
 
-        <section id="star-details-section" class="fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 z-50 hidden" aria-modal="true" role="dialog"> <div class="bg-gray-800 text-gray-200 p-6 rounded-lg shadow-xl max-w-lg w-full border border-gray-600 relative max-h-[80vh] overflow-y-auto animate-fade-in">
+        <section id="star-details-section" class="fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 z-50 hidden" aria-modal="true" role="dialog">
+             <div class="bg-gray-800 text-gray-200 p-6 rounded-lg shadow-xl max-w-lg w-full border border-gray-600 relative max-h-[80vh] overflow-y-auto animate-fade-in">
                  <button id="close-details-button" class="absolute top-3 right-3 text-gray-400 hover:text-white" aria-label="Close star details">
                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                  </button>
                  <h3 id="details-star-name" class="text-3xl font-bold mb-4 text-indigo-300">Star Name</h3>
-                 <div class="space-y-3 text-sm text-gray-300"> <p><strong>Scientific Designation:</strong> <span id="details-designation">-</span></p>
+                 <div class="space-y-3 text-sm text-gray-300">
+                    <p><strong>Scientific Designation:</strong> <span id="details-designation">-</span></p>
                      <p><strong>Distance:</strong> <span id="details-distance-ly">-</span> light-years (<span id="details-distance-pc">-</span> parsecs)</p>
                      <p><strong>Constellation:</strong> <span id="details-constellation">-</span></p>
                      <p><strong>Spectral Type:</strong> <span id="details-spectral">-</span></p>
@@ -115,7 +130,7 @@
         <section id="personalized-content-section" class="bg-gray-900/60 backdrop-blur-md p-6 rounded-lg shadow-lg mt-8 border border-gray-700 opacity-0 hidden" aria-live="polite">
              <h2 class="text-2xl font-semibold mb-4 text-indigo-300">Your Next Cosmic Milestone</h2>
              <div id="personalized-content" class="space-y-4 text-gray-300">
-                 </div>
+             </div>
              <div class="mt-6 text-center">
                  <p class="text-indigo-300">Enjoying StellarBirthdays?</p>
                  <a href="#" id="mobile-app-link" class="inline-block mt-2 bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-600 hover:to-cyan-600 text-white font-semibold py-2 px-5 rounded-md shadow hover:shadow-lg">
@@ -144,15 +159,26 @@
         const personalizedContentSection = document.getElementById('personalized-content-section');
         const personalizedContent = document.getElementById('personalized-content');
         const currentYearSpan = document.getElementById('current-year');
+        // Pagination Elements
+        const paginationControls = document.getElementById('pagination-controls');
+        const prevButton = document.getElementById('prev-button');
+        const nextButton = document.getElementById('next-button');
+        const pageInfo = document.getElementById('page-info');
+
 
         // --- Constants ---
         const LIGHT_YEARS_TO_PARSECS = 1 / 3.26156;
         const DAYS_PER_YEAR = 365.2425;
         const MS_PER_DAY = 24 * 60 * 60 * 1000;
+        const RESULTS_PER_PAGE = 3; // Number of results to show per page
+
+        // --- State Variables ---
+        let allUpcomingBirthdays = []; // Stores the full list of calculated birthdays
+        let currentPage = 1; // Current page number
 
         // --- Star Data (Further Expanded Sample) ---
         const starData = [
-             // Original + Expansions
+            // ... (Star data remains the same as previous version - truncated for brevity) ...
             { name: "Sirius", designation: "Alpha CMa", distance_ly: 8.6, spectral: "A1Vm", app_mag: -1.46, abs_mag: 1.42, constellation: "Canis Major", description: "The brightest star in the night sky.", mythology: "Associated with dogs.", exoplanets: "Sirius B (WD).", link: "https://en.wikipedia.org/wiki/Sirius" },
             { name: "Alpha Centauri A", designation: "Alpha Cen A", distance_ly: 4.37, spectral: "G2V", app_mag: -0.01, abs_mag: 4.38, constellation: "Centaurus", description: "Closest star system.", mythology: "Centaur's foot.", exoplanets: "Candidate b.", link: "https://en.wikipedia.org/wiki/Alpha_Centauri" },
             { name: "Alpha Centauri B", designation: "Alpha Cen B", distance_ly: 4.37, spectral: "K1V", app_mag: 1.34, abs_mag: 5.71, constellation: "Centaurus", description: "Companion to Alpha Cen A.", mythology: "Shares mythology.", exoplanets: "Candidate c.", link: "https://en.wikipedia.org/wiki/Alpha_Centauri" },
@@ -208,7 +234,7 @@
 
         // --- Filtered Star Data (based on updated criteria) ---
         const filteredStarData = starData.filter(star =>
-            star.distance_ly <= 500 && star.app_mag < 6.0 // Keep filter at 150 ly
+            star.distance_ly <= 150 && star.app_mag < 6.0 // Keep filter at 150 ly
         );
 
         // --- Initial Setup ---
@@ -227,6 +253,21 @@
                 hideStarDetails();
             }
         });
+        // Pagination Listeners
+        prevButton.addEventListener('click', () => {
+            if (currentPage > 1) {
+                currentPage--;
+                displayCurrentPage();
+            }
+        });
+        nextButton.addEventListener('click', () => {
+            const totalPages = Math.ceil(allUpcomingBirthdays.length / RESULTS_PER_PAGE);
+            if (currentPage < totalPages) {
+                currentPage++;
+                displayCurrentPage();
+            }
+        });
+
 
         // --- Helper Functions ---
         function parseDateUTC(dateString) {
@@ -256,13 +297,11 @@
         }
 
         function convertLightYearsToParsecs(lightYears) {
-            // Added check for null/undefined input
             if (lightYears == null) return '-';
             return (lightYears * LIGHT_YEARS_TO_PARSECS).toFixed(2);
         }
 
         function getOrdinalSuffix(n) {
-            // Added check for null/undefined input
             if (n == null) return '';
             const s = ["th", "st", "nd", "rd"];
             const v = n % 100;
@@ -272,11 +311,12 @@
         // --- Core Calculation Logic ---
         function handleCalculation() {
             inputError.textContent = "";
-            resultsList.innerHTML = "";
+            resultsList.innerHTML = ""; // Clear results list
             personalizedContent.innerHTML = "";
             resultsSection.classList.add('opacity-0', 'hidden');
             personalizedContentSection.classList.add('opacity-0', 'hidden');
             noResultsMessage.classList.add('hidden');
+            paginationControls.classList.add('hidden'); // Hide pagination initially
 
             const birthDateString = birthdateInput.value;
             if (!birthDateString) {
@@ -290,25 +330,28 @@
             const today = new Date();
             const todayUTC = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate()));
 
-            const upcomingBirthdays = [];
-            // Ensure filteredStarData is used
+            // Calculate the full list
+            allUpcomingBirthdays = []; // Reset the global list
             filteredStarData.forEach(star => {
-                // Added check for valid distance_ly
                 if (star.distance_ly == null) return;
-
                 const lightTravelTimeYears = star.distance_ly;
                 const sbdUTC = addYearsToDate(birthDateUTC, lightTravelTimeYears);
                 const ageOnSBD = Math.floor(lightTravelTimeYears);
                 if (sbdUTC >= todayUTC) {
-                    upcomingBirthdays.push({ sbd: sbdUTC, star: star, age: ageOnSBD });
+                    allUpcomingBirthdays.push({ sbd: sbdUTC, star: star, age: ageOnSBD });
                 }
             });
 
-            upcomingBirthdays.sort((a, b) => a.sbd.getTime() - b.sbd.getTime());
+            // Sort the full list
+            allUpcomingBirthdays.sort((a, b) => a.sbd.getTime() - b.sbd.getTime());
 
-            displayResults(upcomingBirthdays);
-            if (upcomingBirthdays.length > 0) {
-                displayPersonalizedContent(upcomingBirthdays[0], birthDateUTC);
+            // Reset to page 1 and display
+            currentPage = 1;
+            displayCurrentPage(); // Display the first page
+
+            // Show personalized content for the very first result overall
+            if (allUpcomingBirthdays.length > 0) {
+                displayPersonalizedContent(allUpcomingBirthdays[0], birthDateUTC);
                 personalizedContentSection.classList.remove('hidden');
                 setTimeout(() => personalizedContentSection.classList.remove('opacity-0'), 0);
                 personalizedContentSection.classList.add('animate-fade-in');
@@ -316,29 +359,69 @@
                  personalizedContentSection.classList.add('hidden', 'opacity-0');
             }
 
+            // Show results section (might show "no results" or the first page)
             resultsSection.classList.remove('hidden');
             setTimeout(() => resultsSection.classList.remove('opacity-0'), 0);
             resultsSection.classList.add('animate-fade-in');
         }
 
-        // --- UI Display Functions ---
-        function displayResults(birthdays) {
-            resultsList.innerHTML = '';
-            if (birthdays.length === 0) {
-                noResultsMessage.classList.remove('hidden'); return;
+        // --- NEW: Function to display the current page ---
+        function displayCurrentPage() {
+            resultsList.innerHTML = ''; // Clear previous page's results
+            noResultsMessage.classList.add('hidden'); // Assume results exist initially
+
+            const totalResults = allUpcomingBirthdays.length;
+            const totalPages = Math.ceil(totalResults / RESULTS_PER_PAGE);
+
+            if (totalResults === 0) {
+                noResultsMessage.classList.remove('hidden');
+                paginationControls.classList.add('hidden'); // Hide controls if no results
+                return;
             }
-            noResultsMessage.classList.add('hidden');
+
+            // Calculate slice indices
+            const startIndex = (currentPage - 1) * RESULTS_PER_PAGE;
+            const endIndex = startIndex + RESULTS_PER_PAGE;
+            const birthdaysToDisplay = allUpcomingBirthdays.slice(startIndex, endIndex);
+
+            // Display the slice
+            displayResults(birthdaysToDisplay);
+
+            // Update and show pagination controls if needed
+            if (totalPages > 1) {
+                pageInfo.textContent = `Page ${currentPage} of ${totalPages}`;
+                prevButton.disabled = currentPage === 1;
+                nextButton.disabled = currentPage === totalPages;
+                paginationControls.classList.remove('hidden');
+            } else {
+                paginationControls.classList.add('hidden'); // Hide if only one page
+            }
+        }
+
+
+        // --- UI Display Functions ---
+        /**
+         * Displays a slice of Stellar Birthdays in the list.
+         * @param {Array} birthdays - Array of birthday objects for the current page.
+         */
+        function displayResults(birthdays) {
+            // Note: Clearing is now done in displayCurrentPage before calling this
+            // resultsList.innerHTML = '';
+
+            if (birthdays.length === 0 && allUpcomingBirthdays.length === 0) {
+                 // This case is handled by displayCurrentPage showing noResultsMessage
+                 return;
+            }
 
             birthdays.forEach((bday, index) => {
                 const star = bday.star;
                 const distancePc = convertLightYearsToParsecs(star.distance_ly);
                 const formattedSBD = formatDate(bday.sbd);
                 const listItem = document.createElement('div');
-                // Updated list item style for dark theme
                 listItem.className = "bg-gray-900/60 backdrop-blur-md p-4 rounded-lg shadow border border-gray-700 cursor-pointer hover:bg-gray-800/70 animate-fade-in opacity-0";
+                // Stagger animation based on index *within the page*
                 listItem.style.animationDelay = `${index * 0.05}s`;
                 listItem.dataset.starName = star.name;
-                 // Updated text colors for dark theme
                 listItem.innerHTML = `
                     <p class="text-lg font-semibold text-gray-100">Stellar Birthday: <span class="text-purple-400 font-bold">${formattedSBD}</span></p>
                     <p class="text-sm text-gray-400">Star: <span class="font-medium text-indigo-300">${star.name || 'N/A'}</span> (${star.distance_ly ?? '?'} light-years / ${distancePc} parsecs)</p>
@@ -350,13 +433,18 @@
             });
         }
 
+        /**
+         * Displays personalized content for the *first overall* upcoming birthday.
+         * @param {object} nextBirthday - The first birthday object from the full sorted list.
+         * @param {Date} birthDateUTC - The user's birth date (UTC).
+         */
         function displayPersonalizedContent(nextBirthday, birthDateUTC) {
+            // This function remains the same, always showing the *next* overall milestone
             const star = nextBirthday.star;
             const formattedSBD = formatDate(nextBirthday.sbd);
             const formattedBirthDate = formatDate(birthDateUTC);
-             // Updated text colors for dark theme
             let story = `
-                <h3 class="text-xl font-semibold text-indigo-300">${star.name || 'This Star'}: Your Next Milestone</h3>
+                <h3 class="text-xl font-semibold text-indigo-300">${star.name || 'This Star'}: Your Next Cosmic Milestone</h3>
                 <p class="italic text-gray-400">On <span class="font-semibold text-purple-300">${formattedSBD}</span>, light that left the star <span class="font-semibold text-gray-200">${star.name || 'nearby'}</span> around the time you were born (${formattedBirthDate}) will finally complete its ${star.distance_ly ?? 'cosmic'}-light-year journey to Earth.</p>
                 <p class="text-gray-300">Imagine that photon's incredible voyage across the cosmos, arriving just in time for your ${nextBirthday.age ?? 'next'}${getOrdinalSuffix(nextBirthday.age)} Stellar Birthday!</p>
                 <p class="text-sm text-gray-400">${star.description ? `Known fact: ${star.description}` : ''}</p>
